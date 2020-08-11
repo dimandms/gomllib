@@ -133,6 +133,12 @@ func Test_scalarMultiplication(t *testing.T) {
 			0.0,
 			true,
 		},
+		{
+			"not equal lenghts 2",
+			args{a: []float64{1.0, 2.0, 3.0}, b: []float64{2.0, 1.0}},
+			0.0,
+			true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
