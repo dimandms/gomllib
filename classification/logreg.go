@@ -1,6 +1,9 @@
 package logreg
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
 type LogisticRegression struct {
 	trainX        [][]float64
@@ -20,26 +23,20 @@ func MeanSquareError(weights []float64, objects [][]float64, trueAnswers []float
 	var result float64
 
 	for i, obj := range objects {
-		squareErrorValue, err := SquareError(weights, obj, trueAnswers[i])
+		answer, err := scalarMultiplication(weights, obj)
 		if err != nil {
 			return 0.0, fmt.Errorf("MSE calcualtion error: %v", err)
 		}
 
-		result += squareErrorValue
+		result += squareError(answer, trueAnswers[i])
 	}
 
 	return result, nil
 
 }
 
-func SquareError(weights []float64, featuresValues []float64, trueAnswer float64) (float64, error) {
-	scalarProduct, err := scalarMultiplication(weights, featuresValues)
-	if err != nil {
-		return 0.0, fmt.Errorf("error calculating SquareError: %v", err)
-	}
-
-	return scalarProduct - trueAnswer, nil
-
+func squareError(calculatedAnswer, trueAnswer float64) float64 {
+	return math.Pow(calculatedAnswer-trueAnswer, 2)
 }
 
 func scalarMultiplication(a, b []float64) (float64, error) {
