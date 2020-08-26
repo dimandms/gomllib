@@ -62,6 +62,7 @@ func (lr LogisticRegression) Train(trainX [][]float64, trainY []float64) error {
 
 	}
 
+	lr.weights = inititalWeights
 	return nil
 }
 
