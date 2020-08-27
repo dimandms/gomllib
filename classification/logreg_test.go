@@ -1,4 +1,4 @@
-package logreg
+package classification
 
 import (
 	"math"
