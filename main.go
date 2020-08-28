@@ -3,22 +3,32 @@ package main
 import (
 	"fmt"
 
-	clf "github.com/dimandms/gomllib/classification"
+	"github.com/dimandms/gomllib/classification"
+	"github.com/dimandms/gomllib/datasets"
 )
 
 func main() {
-	clf := clf.New(false)
-
-	x := [][]float64{
-		{1.0, 2.0, 3.0},
-		{-1.0, 2.0, 3.0},
-		{-1.0, -2.0, 3.0},
+	X, y, err := datasets.LoadIris()
+	if err != nil {
+		fmt.Println(err)
 	}
-	y := []float64{1.0, 0.0, 0.0}
 
-	err := clf.Train(x, y)
+	fmt.Printf("X: %v\n", X[0:4])
+	fmt.Printf("y: %v\n", y[0:4])
+
+	clf := classification.New(false)
+
+	err = clf.Train(X[0:98], y[0:98])
 	if err != nil {
 		fmt.Println("error")
 	}
-	fmt.Println(clf.Weights)
+
+	fmt.Printf("clf.Weights: %v\n", clf.Weights)
+
+	probs, err := clf.PredictProbabilities(X[50:53])
+	if err != nil {
+		fmt.Println("error")
+	}
+
+	fmt.Printf("probs: %v\n", probs)
 }
