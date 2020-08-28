@@ -7,10 +7,11 @@ import (
 	"strconv"
 )
 
+//1 vs many
 var irisTargets = map[string]float64{
-	"setosa":     0.0,
-	"versicolor": 1.0,
-	"virginica":  2.0,
+	"setosa":     1.0,
+	"versicolor": 0.0,
+	"virginica":  0.0,
 }
 
 func LoadIris() ([][]float64, []float64, error) {
@@ -29,7 +30,7 @@ func LoadIris() ([][]float64, []float64, error) {
 
 	for _, record := range records[1:] {
 		object := make([]float64, 0)
-		for _, featureStringValue := range record[0:3] {
+		for _, featureStringValue := range record[0:2] {
 			value, err := strconv.ParseFloat(featureStringValue, 64)
 			if err != nil {
 				return nil, nil, fmt.Errorf("Couldn't read iris dataset: %v", err)

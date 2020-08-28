@@ -54,7 +54,7 @@ func (lr *LogisticRegression) Train(trainX [][]float64, trainY []float64) error 
 			return fmt.Errorf("Logreg train error: %v", err)
 		}
 
-		fmt.Printf("iteration [%d] loss: %v \n", numberOfIteration, loss)
+		fmt.Printf("iteration [%d] grad: %v, loss: %v w: %v, b: %v \n", numberOfIteration, loss)
 
 		for i := range totalGradient {
 			totalGradient[i] /= float64(yLength)

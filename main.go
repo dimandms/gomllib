@@ -2,33 +2,31 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 
-	"github.com/dimandms/gomllib/classification"
-	"github.com/dimandms/gomllib/datasets"
+	"github.com/dimandms/gomllib/regression"
 )
 
 func main() {
-	X, y, err := datasets.LoadIris()
-	if err != nil {
-		fmt.Println(err)
+	X := make([]float64, 0)
+	y := make([]float64, 0)
+
+	w := 10.0
+	b := 2.0
+
+	numOfPoints := 50
+	n := 0
+
+	for n < numOfPoints {
+		x := float64(n)
+		X = append(X, x)
+		y = append(y, w*x+b+rand.Float64())
+		n += 1
 	}
 
-	fmt.Printf("X: %v\n", X[0:4])
-	fmt.Printf("y: %v\n", y[0:4])
+	fmt.Printf("X: %v \n", X)
+	fmt.Printf("y: %v \n", y)
 
-	clf := classification.New(false)
-
-	err = clf.Train(X[0:98], y[0:98])
-	if err != nil {
-		fmt.Println("error")
-	}
-
-	fmt.Printf("clf.Weights: %v\n", clf.Weights)
-
-	probs, err := clf.PredictProbabilities(X[50:53])
-	if err != nil {
-		fmt.Println("error")
-	}
-
-	fmt.Printf("probs: %v\n", probs)
+	reg := regression.NewLinearRegressor()
+	reg.Train(X, y)
 }
