@@ -18,7 +18,7 @@ func main() {
 	n := 0
 
 	for n < numOfPoints {
-		x := float64(n)
+		x := float64(n) / 50.0
 		X = append(X, x)
 		y = append(y, w*x+b+rand.Float64()/20)
 		n += 1

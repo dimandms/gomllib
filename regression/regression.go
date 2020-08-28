@@ -26,9 +26,9 @@ func (lr *LinearRegressor) Train(trainX []float64, trainY []float64) error {
 	inititalWeight := rand.Float64()
 	inititalBias := rand.Float64()
 
-	learningRate := 0.001
+	learningRate := 0.1
 	numberOfIteration := 0
-	maxNumberOfIteration := 100
+	maxNumberOfIteration := 500
 
 	for numberOfIteration < maxNumberOfIteration {
 		numberOfIteration += 1
