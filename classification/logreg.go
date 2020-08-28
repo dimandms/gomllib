@@ -32,8 +32,10 @@ func (lr *LogisticRegression) Train(trainX [][]float64, trainY []float64) error 
 	learningRate := 0.1
 	epsilon := 0.001
 	initialEpsilon := 9999.0
+	numberOfIteration := 0
 
 	for initialEpsilon > epsilon {
+		numberOfIteration += 1
 		totalGradient := make([]float64, weightsLength)
 
 		for i, object := range trainX {
@@ -46,6 +48,13 @@ func (lr *LogisticRegression) Train(trainX [][]float64, trainY []float64) error 
 				totalGradient[i] += partialGradient[i]
 			}
 		}
+
+		loss, err := logLoss(trainX, inititalWeights, trainY)
+		if err != nil {
+			return fmt.Errorf("Logreg train error: %v", err)
+		}
+
+		fmt.Printf("iteration [%d] loss: %v \n", numberOfIteration, loss)
 
 		for i := range totalGradient {
 			totalGradient[i] *= learningRate
@@ -61,6 +70,8 @@ func (lr *LogisticRegression) Train(trainX [][]float64, trainY []float64) error 
 		}
 
 	}
+
+	fmt.Println(numberOfIteration)
 
 	lr.Weights = inititalWeights
 	return nil
@@ -110,7 +121,7 @@ func logLossGradient(object []float64, weights []float64, trueAnswer float64) ([
 	return result, nil
 }
 
-func logLoss(weights []float64, objects [][]float64, trueAnswers []float64) (float64, error) {
+func logLoss(objects [][]float64, weights []float64, trueAnswers []float64) (float64, error) {
 	var result float64
 
 	for i, obj := range objects {
