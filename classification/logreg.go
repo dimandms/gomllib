@@ -7,7 +7,7 @@ import (
 )
 
 type LogisticRegression struct {
-	weights       []float64
+	Weights       []float64
 	fit_intercept bool
 }
 
@@ -15,7 +15,7 @@ func New(fit_intercept bool) *LogisticRegression {
 	return &LogisticRegression{fit_intercept: fit_intercept}
 }
 
-func (lr LogisticRegression) Train(trainX [][]float64, trainY []float64) error {
+func (lr *LogisticRegression) Train(trainX [][]float64, trainY []float64) error {
 	xLength := len(trainX)
 	yLength := len(trainY)
 	weightsLength := len(trainX[0])
@@ -25,7 +25,7 @@ func (lr LogisticRegression) Train(trainX [][]float64, trainY []float64) error {
 	}
 
 	inititalWeights := make([]float64, weightsLength)
-	for i, _ := range inititalWeights {
+	for i := range inititalWeights {
 		inititalWeights[i] = rand.Float64()
 	}
 
@@ -62,11 +62,11 @@ func (lr LogisticRegression) Train(trainX [][]float64, trainY []float64) error {
 
 	}
 
-	lr.weights = inititalWeights
+	lr.Weights = inititalWeights
 	return nil
 }
 
-func (lr LogisticRegression) PredictProbabilities(objects [][]float64) ([]float64, error) {
+func (lr *LogisticRegression) PredictProbabilities(objects [][]float64) ([]float64, error) {
 	result := make([]float64, 0)
 
 	for _, object := range objects {
@@ -81,9 +81,9 @@ func (lr LogisticRegression) PredictProbabilities(objects [][]float64) ([]float6
 	return result, nil
 }
 
-func (lr LogisticRegression) predictProbability(object []float64) (float64, error) {
+func (lr *LogisticRegression) predictProbability(object []float64) (float64, error) {
 
-	multiplied, err := scalarMultiplication(lr.weights, object)
+	multiplied, err := scalarMultiplication(lr.Weights, object)
 	if err != nil {
 		return 0.0, fmt.Errorf("Prediction error: %v", err)
 	}
@@ -96,7 +96,7 @@ func sigmoid(x float64) float64 {
 }
 
 func logLossGradient(object []float64, weights []float64, trueAnswer float64) ([]float64, error) {
-	result := make([]float64, len(weights))
+	result := make([]float64, 0)
 
 	multiplied, err := scalarMultiplication(weights, object)
 	if err != nil {
