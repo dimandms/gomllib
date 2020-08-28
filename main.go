@@ -11,8 +11,8 @@ func main() {
 	X := make([]float64, 0)
 	y := make([]float64, 0)
 
-	w := 10.0
-	b := 2.0
+	w := 0.5
+	b := 0.1
 
 	numOfPoints := 50
 	n := 0
@@ -20,7 +20,7 @@ func main() {
 	for n < numOfPoints {
 		x := float64(n)
 		X = append(X, x)
-		y = append(y, w*x+b+rand.Float64())
+		y = append(y, w*x+b+rand.Float64()/20)
 		n += 1
 	}
 

@@ -28,7 +28,7 @@ func (lr *LinearRegressor) Train(trainX []float64, trainY []float64) error {
 
 	learningRate := 0.001
 	numberOfIteration := 0
-	maxNumberOfIteration := 1000
+	maxNumberOfIteration := 100
 
 	for numberOfIteration < maxNumberOfIteration {
 		numberOfIteration += 1
