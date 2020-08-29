@@ -24,6 +24,16 @@ func NewVector(data []float64) *Vector {
 	}
 }
 
+func NewVectorFrom(value float64, size int) *Vector {
+	data := make([]float64, size)
+
+	for i := range data {
+		data[i] = value
+	}
+
+	return &Vector{data}
+}
+
 func (m *Matrix) Shape() (int, int) {
 	return len(m.data), len(m.data[0])
 }
@@ -77,6 +87,22 @@ func (v *Vector) SubVector(u *Vector) (*Vector, error) {
 
 	for i := range vData {
 		result[i] = vData[i] - uData[i]
+	}
+
+	return NewVector(result), nil
+}
+
+func (v *Vector) AddVector(u *Vector) (*Vector, error) {
+	if v.Shape() != u.Shape() {
+		return nil, fmt.Errorf("vector sub with vector failed: incompatable shapes: %v, %v", v.Shape(), u.Shape())
+	}
+
+	result := make([]float64, v.Shape())
+	vData := v.getData()
+	uData := u.getData()
+
+	for i := range vData {
+		result[i] = vData[i] + uData[i]
 	}
 
 	return NewVector(result), nil

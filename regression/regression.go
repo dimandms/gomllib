@@ -60,14 +60,25 @@ func (lr *LinearRegressor) initWeigths(numberOfFeatures int) {
 	lr.Weights = ndarray.NewVector(weights)
 }
 
-func mse(objects *ndarray.Matrix, trueValues, weights ndarray.Vector, bias float64) float64 {
-	result := 0.0
+func mse(objects *ndarray.Matrix, trueValues, weights *ndarray.Vector, bias float64) float64 {
+	numberOfObjects, _ := objects.Shape()
+	biasVector := ndarray.NewVectorFrom(bias, numberOfObjects)
 
-	for i, object := range objects {
-		total += math.Pow(trueValues[i]-(object*weight+bias), 2)
+	answer, err := objects.DotVector(weights)
+	if err != nil {
+		return 0.0
 	}
 
-	return total / float64(len(trueValues))
+	biasedAnswer, err := answer.AddVector(biasVector)
+	if err != nil {
+		return 0.0
+	}
+
+	errorVectorized, err := trueValues.SubVector(biasedAnswer)
+	if err != nil {
+		return 0.0
+	}
+	return math.Pow(errorVectorized.Sum(), 2) / float64(numberOfObjects)
 }
 
 func mseGradient(objects, trueValues []float64, weight, bias float64) []float64 {
