@@ -4,27 +4,25 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+
+	"github.com/dimandms/gomllib/ndarray"
 )
 
 type LinearRegressor struct {
-	Weight float64
-	Bias   float64
+	Weights      *ndarray.Vector
+	Bias         float64
+	HasIntercept bool
 }
 
-func NewLinearRegressor() LinearRegressor {
-	return LinearRegressor{}
+func NewLinearRegressor(addItercept bool) LinearRegressor {
+	return LinearRegressor{HasIntercept: addItercept}
 }
 
-func (lr *LinearRegressor) Train(trainX []float64, trainY []float64) error {
-	xLength := len(trainX)
-	yLength := len(trainY)
+func (lr *LinearRegressor) Train(objects *ndarray.Matrix, targets *ndarray.Vector) error {
+	numberOfObjects, numberOfFeatures := objects.Shape()
+	numberOfTargets := targets.Shape()
 
-	if xLength != yLength {
-		return fmt.Errorf("Regressor train error: X and Y length missmatch: %v, %v", xLength, yLength)
-	}
-
-	inititalWeight := rand.Float64()
-	inititalBias := rand.Float64()
+	lr.initWeigths(numberOfFeatures)
 
 	learningRate := 0.1
 	numberOfIteration := 0
@@ -49,7 +47,20 @@ func (lr *LinearRegressor) Train(trainX []float64, trainY []float64) error {
 	return nil
 }
 
-func mse(objects, trueValues []float64, weight, bias float64) float64 {
+func (lr *LinearRegressor) initWeigths(numberOfFeatures int) {
+	if lr.HasIntercept {
+		lr.Bias = rand.Float64()
+	}
+
+	weights := make([]float64, numberOfFeatures)
+	for i := range weights {
+		weights[i] = rand.Float64()
+	}
+
+	lr.Weights = ndarray.NewVector(weights)
+}
+
+func mse(objects *ndarray.Matrix, trueValues, weights ndarray.Vector, bias float64) float64 {
 	total := 0.0
 
 	for i, object := range objects {

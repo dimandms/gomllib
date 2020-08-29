@@ -58,6 +58,14 @@ func (m *Matrix) DotVector(v *Vector) (*Vector, error) {
 	return NewVector(result), nil
 }
 
+func (v *Vector) DotVector(u *Vector) (float64, error) {
+	if v.Shape() != u.Shape() {
+		return 0.0, fmt.Errorf("vector dot product with vector failed: incompatable shapes: %v, %v", v.Shape(), u.Shape())
+	}
+
+	return scalarMultiplication(v, u), nil
+}
+
 func scalarMultiplication(a, b *Vector) float64 {
 	var result float64
 
