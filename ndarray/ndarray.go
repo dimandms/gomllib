@@ -2,6 +2,7 @@ package ndarray
 
 import (
 	"fmt"
+	"math"
 )
 
 type Matrix struct {
@@ -115,6 +116,15 @@ func (v *Vector) Sum() float64 {
 	}
 
 	return result
+}
+
+func (v *Vector) Pow(n float64) *Vector {
+	result := make([]float64, 0)
+	for _, value := range v.getData() {
+		result = append(result, math.Pow(value, n))
+	}
+
+	return NewVector(result)
 }
 
 func scalarMultiplication(a, b *Vector) float64 {

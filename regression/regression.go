@@ -2,7 +2,6 @@ package regression
 
 import (
 	"fmt"
-	"math"
 	"math/rand"
 
 	"github.com/dimandms/gomllib/ndarray"
@@ -78,7 +77,7 @@ func mse(objects *ndarray.Matrix, trueValues, weights *ndarray.Vector, bias floa
 	if err != nil {
 		return 0.0
 	}
-	return math.Pow(errorVectorized.Sum(), 2) / float64(numberOfObjects)
+	return errorVectorized.Pow(2).Sum() / float64(numberOfObjects)
 }
 
 func mseGradient(objects, trueValues []float64, weight, bias float64) []float64 {
