@@ -54,8 +54,8 @@ func TestMatrix_Dot(t *testing.T) {
 
 func Test_scalarMultiplication(t *testing.T) {
 	type args struct {
-		a []float64
-		b []float64
+		a *Vector
+		b *Vector
 	}
 	tests := []struct {
 		name string
@@ -64,7 +64,7 @@ func Test_scalarMultiplication(t *testing.T) {
 	}{
 		{
 			"happy path test",
-			args{a: []float64{1.0, 2.0, 3.0}, b: []float64{3.0, 2.0, 1.0}},
+			args{a: NewVector([]float64{1.0, 2.0, 3.0}), b: NewVector([]float64{3.0, 2.0, 1.0})},
 			10.0,
 		},
 	}
