@@ -1,9 +1,16 @@
 package ndarray
 
 import (
+	"math"
 	"reflect"
 	"testing"
 )
+
+const float64EqualityThreshold = 1e-9
+
+func equal(a, b float64) bool {
+	return math.Abs(a-b) <= float64EqualityThreshold
+}
 
 func TestMatrix_Dot(t *testing.T) {
 	type args struct {
@@ -40,6 +47,32 @@ func TestMatrix_Dot(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Matrix.DotVector() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_scalarMultiplication(t *testing.T) {
+	type args struct {
+		a []float64
+		b []float64
+	}
+	tests := []struct {
+		name string
+		args args
+		want float64
+	}{
+		{
+			"happy path test",
+			args{a: []float64{1.0, 2.0, 3.0}, b: []float64{3.0, 2.0, 1.0}},
+			10.0,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := scalarMultiplication(tt.args.a, tt.args.b)
+			if !equal(got, tt.want) {
+				t.Errorf("scalarMultiplication() = %v, want %v", got, tt.want)
 			}
 		})
 	}
