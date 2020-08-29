@@ -69,6 +69,25 @@ func (m *Matrix) DotVector(v *Vector) (*Vector, error) {
 	return NewVector(result), nil
 }
 
+func (m *Matrix) Transpose() *Matrix {
+	k, z := m.Shape()
+
+	result := make([][]float64, z)
+	for i := range result {
+		result[i] = make([]float64, k)
+	}
+
+	mData := m.getData()
+
+	for i, row := range mData {
+		for j := range row {
+			result[j][i] = mData[i][j]
+		}
+	}
+
+	return NewMatrix(result)
+}
+
 func (v *Vector) DotVector(u *Vector) (float64, error) {
 	if v.Shape() != u.Shape() {
 		return 0.0, fmt.Errorf("vector dot product with vector failed: incompatable shapes: %v, %v", v.Shape(), u.Shape())

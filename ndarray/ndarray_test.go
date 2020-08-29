@@ -77,3 +77,30 @@ func Test_scalarMultiplication(t *testing.T) {
 		})
 	}
 }
+
+func TestMatrix_Transpose(t *testing.T) {
+	tests := []struct {
+		name string
+		m    *Matrix
+		want *Matrix
+	}{
+		{
+			"happy path",
+			NewMatrix([][]float64{
+				{1.0, 2.0},
+				{3.0, 4.0},
+			}),
+			NewMatrix([][]float64{
+				{1.0, 3.0},
+				{2.0, 4.0},
+			}),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.m.Transpose(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Matrix.Transpose() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

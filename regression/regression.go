@@ -80,9 +80,29 @@ func mse(objects *ndarray.Matrix, trueValues, weights *ndarray.Vector, bias floa
 	return errorVectorized.Pow(2).Sum() / float64(numberOfObjects)
 }
 
-func mseGradient(objects, trueValues []float64, weight, bias float64) []float64 {
-	result := []float64{0.0, 0.0}
-	numOfObjects := float64(len(objects))
+func mseGradient(objects *ndarray.Matrix, trueValues, weights *ndarray.Vector, bias float64) *ndarray.Vector {
+	numberOfObjects, _ := objects.Shape()
+	biasVector := ndarray.NewVectorFrom(bias, numberOfObjects)
+
+	for _, object := range objects.getData() {
+		answer, err := object.DotVector(weights)
+		if err != nil {
+			return nil
+		}
+
+		biasedAnswer, err := answer.AddVector(biasVector)
+		if err != nil {
+			return nil
+		}
+
+		errorVectorized, err := trueValues.SubVector(biasedAnswer)
+		if err != nil {
+			return nil
+		}
+
+	}
+
+	object.DotVector()
 
 	for i, object := range objects {
 		result[0] += -2 * object * (trueValues[i] - (object*weight + bias))
