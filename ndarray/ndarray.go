@@ -82,6 +82,15 @@ func (v *Vector) SubVector(u *Vector) (*Vector, error) {
 	return NewVector(result), nil
 }
 
+func (v *Vector) Sum() float64 {
+	result := 0.0
+	for _, value := range v.getData() {
+		result += value
+	}
+
+	return result
+}
+
 func scalarMultiplication(a, b *Vector) float64 {
 	var result float64
 
