@@ -84,30 +84,25 @@ func mseGradient(objects *ndarray.Matrix, trueValues, weights *ndarray.Vector, b
 	numberOfObjects, _ := objects.Shape()
 	biasVector := ndarray.NewVectorFrom(bias, numberOfObjects)
 
-	for _, object := range objects.getData() {
-		answer, err := object.DotVector(weights)
-		if err != nil {
-			return nil
-		}
-
-		biasedAnswer, err := answer.AddVector(biasVector)
-		if err != nil {
-			return nil
-		}
-
-		errorVectorized, err := trueValues.SubVector(biasedAnswer)
-		if err != nil {
-			return nil
-		}
-
+	answer, err := objects.DotVector(weights)
+	if err != nil {
+		return nil
 	}
 
-	object.DotVector()
-
-	for i, object := range objects {
-		result[0] += -2 * object * (trueValues[i] - (object*weight + bias))
-		result[1] += -2 * (trueValues[i] - (object*weight + bias))
+	biasedAnswer, err := answer.AddVector(biasVector)
+	if err != nil {
+		return nil
 	}
 
-	return []float64{result[0] / numOfObjects, result[1] / numOfObjects}
+	errorVectorized, err := biasedAnswer.SubVector(trueValues)
+	if err != nil {
+		return nil
+	}
+
+	tempResult, err := objects.Transpose().DotVector(errorVectorized)
+	if err != nil {
+		return nil
+	}
+
+	return tempResult.MultiplicateBy(1 / float64(numberOfObjects))
 }
