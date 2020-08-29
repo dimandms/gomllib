@@ -27,6 +27,6 @@ func main() {
 	fmt.Printf("X: %v \n", X)
 	fmt.Printf("y: %v \n", y)
 
-	reg := regression.NewLinearRegressor()
+	reg := regression.NewLinearRegressor(true)
 	reg.Train(X, y)
 }

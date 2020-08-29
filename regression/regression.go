@@ -18,8 +18,7 @@ func NewLinearRegressor(addItercept bool) LinearRegressor {
 }
 
 func (lr *LinearRegressor) Train(objects *ndarray.Matrix, targets *ndarray.Vector) error {
-	numberOfObjects, numberOfFeatures := objects.Shape()
-	numberOfTargets := targets.Shape()
+	_, numberOfFeatures := objects.Shape()
 
 	lr.initWeigths(numberOfFeatures)
 
@@ -30,18 +29,20 @@ func (lr *LinearRegressor) Train(objects *ndarray.Matrix, targets *ndarray.Vecto
 	for numberOfIteration < maxNumberOfIteration {
 		numberOfIteration += 1
 
-		grad := mseGradient(trainX, trainY, inititalWeight, inititalBias)
+		grad, biasDerivative := mseGradient(objects, targets, lr.Weights, lr.Bias)
 
-		inititalWeight -= grad[0] * learningRate
-		inititalBias -= grad[1] * learningRate
+		updatedWeights, err := lr.Weights.SubVector(grad.MultiplicateBy(learningRate))
+		if err != nil {
+			return err
+		}
+		lr.Weights = updatedWeights
 
-		loss := mse(trainX, trainY, inititalWeight, inititalBias)
-		fmt.Printf("iteration [%d] grad: %v, loss: %v w: %v, b: %v \n", numberOfIteration, grad, loss, inititalWeight, inititalBias)
+		lr.Bias -= biasDerivative * learningRate
+
+		loss := mse(objects, targets, lr.Weights, lr.Bias)
+		fmt.Printf("iteration [%d] grad: %v, loss: %v w: %v, b: %v \n", numberOfIteration, grad, loss, lr.Weights, lr.Bias)
 
 	}
-
-	lr.Weight = inititalWeight
-	lr.Bias = inititalBias
 
 	return nil
 }
@@ -80,29 +81,31 @@ func mse(objects *ndarray.Matrix, trueValues, weights *ndarray.Vector, bias floa
 	return errorVectorized.Pow(2).Sum() / float64(numberOfObjects)
 }
 
-func mseGradient(objects *ndarray.Matrix, trueValues, weights *ndarray.Vector, bias float64) *ndarray.Vector {
+func mseGradient(objects *ndarray.Matrix, trueValues, weights *ndarray.Vector, bias float64) (*ndarray.Vector, float64) {
 	numberOfObjects, _ := objects.Shape()
 	biasVector := ndarray.NewVectorFrom(bias, numberOfObjects)
 
 	answer, err := objects.DotVector(weights)
 	if err != nil {
-		return nil
+		return nil, 0.0
 	}
 
 	biasedAnswer, err := answer.AddVector(biasVector)
 	if err != nil {
-		return nil
+		return nil, 0.0
 	}
 
 	errorVectorized, err := biasedAnswer.SubVector(trueValues)
 	if err != nil {
-		return nil
+		return nil, 0.0
 	}
 
 	tempResult, err := objects.Transpose().DotVector(errorVectorized)
 	if err != nil {
-		return nil
+		return nil, 0.0
 	}
 
-	return tempResult.MultiplicateBy(1 / float64(numberOfObjects))
+	partialBiasDerivative := errorVectorized.Sum()
+
+	return tempResult.MultiplicateBy(1 / float64(numberOfObjects)), partialBiasDerivative
 }
