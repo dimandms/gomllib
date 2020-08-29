@@ -61,7 +61,7 @@ func (lr *LinearRegressor) initWeigths(numberOfFeatures int) {
 }
 
 func mse(objects *ndarray.Matrix, trueValues, weights ndarray.Vector, bias float64) float64 {
-	total := 0.0
+	result := 0.0
 
 	for i, object := range objects {
 		total += math.Pow(trueValues[i]-(object*weight+bias), 2)

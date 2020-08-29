@@ -66,6 +66,22 @@ func (v *Vector) DotVector(u *Vector) (float64, error) {
 	return scalarMultiplication(v, u), nil
 }
 
+func (v *Vector) SubVector(u *Vector) (*Vector, error) {
+	if v.Shape() != u.Shape() {
+		return nil, fmt.Errorf("vector sub with vector failed: incompatable shapes: %v, %v", v.Shape(), u.Shape())
+	}
+
+	result := make([]float64, v.Shape())
+	vData := v.getData()
+	uData := u.getData()
+
+	for i := range vData {
+		result[i] = vData[i] - uData[i]
+	}
+
+	return NewVector(result), nil
+}
+
 func scalarMultiplication(a, b *Vector) float64 {
 	var result float64
 
