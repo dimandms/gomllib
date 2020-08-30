@@ -22,7 +22,7 @@ func (lr *LinearRegressor) Train(objects *ndarray.Matrix, targets *ndarray.Vecto
 
 	lr.initWeigths(numberOfFeatures)
 
-	learningRate := 0.1
+	learningRate := 0.01
 	numberOfIteration := 0
 	maxNumberOfIteration := 500
 
