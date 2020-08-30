@@ -85,7 +85,7 @@ func TestMatrix_Transpose(t *testing.T) {
 		want *Matrix
 	}{
 		{
-			"happy path",
+			"happy path 2x2",
 			NewMatrix([][]float64{
 				{1.0, 2.0},
 				{3.0, 4.0},
@@ -93,6 +93,51 @@ func TestMatrix_Transpose(t *testing.T) {
 			NewMatrix([][]float64{
 				{1.0, 3.0},
 				{2.0, 4.0},
+			}),
+		},
+		{
+			"happy path 3x2",
+			NewMatrix([][]float64{
+				{1.0, 2.0},
+				{3.0, 4.0},
+				{5.0, 6.0},
+			}),
+			NewMatrix([][]float64{
+				{1.0, 3.0, 5.0},
+				{2.0, 4.0, 6.0},
+			}),
+		},
+		{
+			"happy path 1x3",
+			NewMatrix([][]float64{
+				{1.0, 2.0, 3.0},
+			}),
+			NewMatrix([][]float64{
+				{1.0},
+				{2.0},
+				{3.0},
+			}),
+		},
+		{
+			"happy path 3x1",
+			NewMatrix([][]float64{
+				{1.0},
+				{2.0},
+				{3.0},
+			}),
+			NewMatrix([][]float64{
+				{1.0, 2.0, 3.0},
+			}),
+		},
+		{
+			"empty item",
+			NewMatrix([][]float64{
+				{},
+				{2.0},
+				{3.0},
+			}),
+			NewMatrix([][]float64{
+				{0.0, 2.0, 3.0},
 			}),
 		},
 	}
