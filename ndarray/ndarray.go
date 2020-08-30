@@ -36,7 +36,14 @@ func NewVectorFrom(value float64, size int) *Vector {
 }
 
 func (m *Matrix) Shape() (int, int) {
-	return len(m.data), len(m.data[0])
+	rows := len(m.data)
+	if rows > 0 {
+		columns := len(m.data[0])
+		return rows, columns
+	}
+
+	return 0, 0
+
 }
 
 func (v *Vector) Shape() int {
@@ -44,11 +51,19 @@ func (v *Vector) Shape() int {
 }
 
 func (m *Matrix) getData() [][]float64 {
-	return m.data
+	if m.data != nil {
+		return m.data
+	}
+
+	return [][]float64{}
 }
 
 func (v *Vector) getData() []float64 {
-	return v.data
+	if v.data != nil {
+		return v.data
+	}
+
+	return []float64{}
 }
 
 func (m *Matrix) DotVector(v *Vector) (*Vector, error) {

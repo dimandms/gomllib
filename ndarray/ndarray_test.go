@@ -104,3 +104,82 @@ func TestMatrix_Transpose(t *testing.T) {
 		})
 	}
 }
+
+func TestMatrix_Shape(t *testing.T) {
+	tests := []struct {
+		name       string
+		m          *Matrix
+		wantFirst  int
+		wantSecond int
+	}{
+		{
+			"happy path 2x2",
+			NewMatrix([][]float64{
+				{1.0, 2.0},
+				{3.0, 4.0},
+			}),
+			2,
+			2,
+		},
+		{
+			"happy path 3x2",
+			NewMatrix([][]float64{
+				{1.0, 2.0},
+				{3.0, 4.0},
+				{3.0, 4.0},
+			}),
+			3,
+			2,
+		},
+		{
+			"emtpy",
+			NewMatrix([][]float64{}),
+			0,
+			0,
+		},
+		{
+			"1D (single column)",
+			NewMatrix([][]float64{
+				{1.0},
+				{3.0},
+				{3.0},
+			}),
+			3,
+			1,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, got1 := tt.m.Shape()
+			if got != tt.wantFirst {
+				t.Errorf("Matrix.Shape() got = %v, want %v", got, tt.wantFirst)
+			}
+			if got1 != tt.wantSecond {
+				t.Errorf("Matrix.Shape() got1 = %v, want %v", got1, tt.wantSecond)
+			}
+		})
+	}
+}
+
+func TestMatrix_getData(t *testing.T) {
+	tests := []struct {
+		name string
+		m    *Matrix
+		want [][]float64
+	}{
+		{
+			name: "nil data slice",
+			m: &Matrix{
+				data: nil,
+			},
+			want: [][]float64{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.m.getData(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Matrix.getData() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
