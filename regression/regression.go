@@ -42,6 +42,17 @@ func (lr *LinearRegressor) Train(objects *ndarray.Matrix, targets *ndarray.Vecto
 	return nil
 }
 
+func (lr *LinearRegressor) Predict(objects *ndarray.Matrix) *ndarray.Vector {
+	objects = lr.preprocess(objects)
+
+	answer, err := objects.DotVector(lr.Weights)
+	if err != nil {
+		return nil
+	}
+
+	return answer
+}
+
 func (lr *LinearRegressor) checkStopIterations(newWeights, previousWeigths *ndarray.Vector) bool {
 	delta, err := previousWeigths.SubVector(newWeights)
 	if err != nil {

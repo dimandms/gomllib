@@ -1,16 +1,9 @@
 package ndarray
 
 import (
-	"math"
 	"reflect"
 	"testing"
 )
-
-const float64EqualityThreshold = 1e-9
-
-func equal(a, b float64) bool {
-	return math.Abs(a-b) <= float64EqualityThreshold
-}
 
 func TestMatrix_Dot(t *testing.T) {
 	type args struct {

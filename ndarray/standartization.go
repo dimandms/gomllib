@@ -2,6 +2,8 @@ package ndarray
 
 import "math"
 
+const float64EqualityThreshold = 1e-5
+
 type Transformer interface {
 	Fit(objects *Matrix) *Matrix
 	Transform(objects *Matrix) *Matrix
@@ -23,21 +25,27 @@ func (s *StandardScaler) Fit(objects *Matrix) {
 		featureMean := mean(feature)
 		featureStandartdDeviation := std(feature, featureMean)
 		s.mean = append(s.mean, featureMean)
-		s.standartdDeviation = append(s.mean, featureStandartdDeviation)
+		s.standartdDeviation = append(s.standartdDeviation, featureStandartdDeviation)
 	}
 }
 
 func (s *StandardScaler) Transform(objects *Matrix) *Matrix {
 	result := make([][]float64, 0)
 
-	for i, object := range objects.getData() {
+	for _, object := range objects.getData() {
 		transformedObject := make([]float64, 0)
-		featureMean := s.mean[i]
-		featureStandartdDeviation := s.standartdDeviation[i]
 
-		for _, featureValue := range object {
-			transformedValue := (featureValue - featureMean) / featureStandartdDeviation
-			transformedObject = append(transformedObject, transformedValue)
+		for i, featureValue := range object {
+			featureMean := s.mean[i]
+			featureStandartdDeviation := s.standartdDeviation[i]
+
+			if !equal(featureStandartdDeviation, 0.0) {
+				transformedValue := (featureValue - featureMean) / featureStandartdDeviation
+				transformedObject = append(transformedObject, transformedValue)
+			} else {
+				transformedValue := (featureValue - featureMean) / 1.0
+				transformedObject = append(transformedObject, transformedValue)
+			}
 		}
 
 		result = append(result, transformedObject)
@@ -45,6 +53,11 @@ func (s *StandardScaler) Transform(objects *Matrix) *Matrix {
 	}
 
 	return NewMatrix(result)
+}
+
+func (s *StandardScaler) FitTransform(objects *Matrix) *Matrix {
+	s.Fit(objects)
+	return s.Transform(objects)
 }
 
 func mean(data []float64) float64 {
@@ -63,4 +76,8 @@ func std(data []float64, mean float64) float64 {
 	}
 
 	return math.Sqrt(result / float64(len(data)))
+}
+
+func equal(a, b float64) bool {
+	return math.Abs(a-b) <= float64EqualityThreshold
 }
