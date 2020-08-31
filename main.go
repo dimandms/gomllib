@@ -17,8 +17,9 @@ func main() {
 
 	for n < numOfPoints {
 		x1 := float64(float64(n) / float64(numOfPoints))
-		X = append(X, []float64{x1})
-		y = append(y, exampleFunc(x1)+rand.Float64()/20)
+		x2 := float64(float64(n) / float64(numOfPoints))
+		X = append(X, []float64{x1, x2})
+		y = append(y, exampleFunc(x1, x2)+rand.Float64()/20)
 		n += 1
 	}
 
@@ -33,14 +34,15 @@ func main() {
 		fmt.Println("oops")
 	}
 
-	preds := reg.Predict(ndarray.NewMatrix([][]float64{data.GetRow(10)}))
+	preds := reg.Predict(ndarray.NewMatrix([][]float64{data.GetRow(15)}))
 
-	fmt.Printf("true: %v preds: %v", targers.GetItem(10), preds)
+	fmt.Printf("true: %v preds: %v", targers.GetItem(15), preds)
 }
 
-func exampleFunc(x1 float64) float64 {
+func exampleFunc(x1, x2 float64) float64 {
 	w1 := 100.
+	w2 := 200.
 	b := 10.
 
-	return w1*x1 + b
+	return w1*x1 + w2*x2 + b
 }
