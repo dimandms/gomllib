@@ -28,9 +28,6 @@ func main() {
 		n += 1
 	}
 
-	fmt.Printf("X: %v \n", X)
-	fmt.Printf("y: %v \n", y)
-
 	reg := regression.NewLinearRegressor(true)
 	err := reg.Train(ndarray.NewMatrix(X), ndarray.NewVector(y))
 	if err != nil {

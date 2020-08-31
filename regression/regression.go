@@ -17,34 +17,42 @@ func NewLinearRegressor(addItercept bool) LinearRegressor {
 }
 
 func (lr *LinearRegressor) Train(objects *ndarray.Matrix, targets *ndarray.Vector) error {
-	numberOfObjects, numberOfFeatures := objects.Shape()
-
-	if lr.HasIntercept {
-		lr.initWeigths(numberOfFeatures + 1)
-		objects = objects.ExtendWith(ndarray.NewVectorFrom(1.0, numberOfObjects))
-	} else {
-		lr.initWeigths(numberOfFeatures)
-	}
+	objects = lr.preprocess(objects)
+	_, n := objects.Shape()
+	lr.initWeigths(n)
 
 	learningRate := 0.01
-	numberOfIteration := 0
-	maxNumberOfIteration := 500
 
-	for numberOfIteration < maxNumberOfIteration {
-		numberOfIteration += 1
-
-		grad := mseGradient(objects, targets, lr.Weights)
-
-		updatedWeights, err := lr.Weights.SubVector(grad.MultiplicateBy(learningRate))
+	for i := 0; i < 500; i++ {
+		err := lr.step(objects, targets, learningRate)
 		if err != nil {
 			return err
 		}
-		lr.Weights = updatedWeights
 
-		loss := mse(objects, targets, lr.Weights)
-		fmt.Printf("iteration [%d] grad: %v, loss: %v w: %v\n", numberOfIteration, grad, loss, lr.Weights)
-
+		fmt.Printf("iteration [%d] loss: %v w: %v\n", i, mse(objects, targets, lr.Weights), lr.Weights)
 	}
+
+	return nil
+}
+
+func (lr *LinearRegressor) preprocess(objects *ndarray.Matrix) *ndarray.Matrix {
+	n, _ := objects.Shape()
+
+	if lr.HasIntercept {
+		fakeBiasFeature := ndarray.NewVectorFrom(1.0, n)
+		return objects.ExtendWith(fakeBiasFeature)
+	}
+	return objects
+}
+
+func (lr *LinearRegressor) step(objects *ndarray.Matrix, targets *ndarray.Vector, learningRate float64) error {
+	grad := mseGradient(objects, targets, lr.Weights)
+
+	newWeights, err := lr.Weights.SubVector(grad.MultiplicateBy(learningRate))
+	if err != nil {
+		return err
+	}
+	lr.Weights = newWeights
 
 	return nil
 }
