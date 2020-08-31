@@ -7,6 +7,10 @@ import (
 	"github.com/dimandms/gomllib/ndarray"
 )
 
+const maxNumberOfIteration = 500
+const learningRate = 0.01
+const epsilon = 0.001
+
 type LinearRegressor struct {
 	Weights      *ndarray.Vector
 	HasIntercept bool
@@ -21,18 +25,33 @@ func (lr *LinearRegressor) Train(objects *ndarray.Matrix, targets *ndarray.Vecto
 	_, n := objects.Shape()
 	lr.initWeigths(n)
 
-	learningRate := 0.01
-
-	for i := 0; i < 500; i++ {
+	for i := 0; i < maxNumberOfIteration; i++ {
+		previousWeigths := lr.Weights.Copy()
 		err := lr.step(objects, targets, learningRate)
 		if err != nil {
 			return err
 		}
 
 		fmt.Printf("iteration [%d] loss: %v w: %v\n", i, mse(objects, targets, lr.Weights), lr.Weights)
+
+		if lr.checkStopIterations(lr.Weights, previousWeigths) {
+			break
+		}
 	}
 
 	return nil
+}
+
+func (lr *LinearRegressor) checkStopIterations(newWeights, previousWeigths *ndarray.Vector) bool {
+	delta, err := previousWeigths.SubVector(newWeights)
+	if err != nil {
+		return false
+	}
+
+	maxDelta := delta.AbsMax()
+	fmt.Printf("max delta of w: %v \n", maxDelta)
+
+	return maxDelta < epsilon
 }
 
 func (lr *LinearRegressor) preprocess(objects *ndarray.Matrix) *ndarray.Matrix {

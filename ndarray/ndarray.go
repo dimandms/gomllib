@@ -170,6 +170,27 @@ func (v *Vector) MultiplicateBy(n float64) *Vector {
 	return NewVector(result)
 }
 
+func (v *Vector) Copy() *Vector {
+	data := v.getData()
+	result := make([]float64, len(data))
+	copy(result, data)
+
+	return NewVector(result)
+}
+
+func (v *Vector) AbsMax() float64 {
+	result := 0.0
+
+	for _, value := range v.getData() {
+		absValue := math.Abs(value)
+		if absValue > result {
+			result = absValue
+		}
+	}
+
+	return result
+}
+
 func (m *Matrix) ExtendWith(v *Vector) *Matrix {
 	result := make([][]float64, 0)
 
