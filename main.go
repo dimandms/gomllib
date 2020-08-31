@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"math"
 	"math/rand"
 
 	"github.com/dimandms/gomllib/ndarray"
@@ -14,13 +13,12 @@ func main() {
 	y := make([]float64, 0)
 
 	numOfPoints := 50
-	n := 1
+	n := 0
 
 	for n < numOfPoints {
-		x1 := float64(n)
-		x2 := math.Log(x1)
-		X = append(X, []float64{x1, x2})
-		y = append(y, exampleFunc(x1, x2)+rand.Float64()/20)
+		x1 := float64(float64(n) / float64(numOfPoints))
+		X = append(X, []float64{x1})
+		y = append(y, exampleFunc(x1)+rand.Float64()/20)
 		n += 1
 	}
 
@@ -28,26 +26,21 @@ func main() {
 
 	scaler := ndarray.NewStandardScaler()
 	data := scaler.FitTransform(ndarray.NewMatrix(X))
-	targets := ndarray.NewVector(y).ScaleStandard()
-	err := reg.Train(data, targets)
+	targers := ndarray.NewVector(y).ScaleStandard()
+
+	err := reg.Train(data, targers)
 	if err != nil {
 		fmt.Println("oops")
 	}
 
-	xTest := make([][]float64, 0)
-	xTest = append(xTest, data.GetRow(25))
+	preds := reg.Predict(ndarray.NewMatrix([][]float64{data.GetRow(10)}))
 
-	yTest := targets.GetItem(25)
-
-	preds := reg.Predict(ndarray.NewMatrix(xTest))
-
-	fmt.Printf("true: %v preds: %v", yTest, preds)
+	fmt.Printf("true: %v preds: %v", targers.GetItem(10), preds)
 }
 
-func exampleFunc(x1, x2 float64) float64 {
+func exampleFunc(x1 float64) float64 {
 	w1 := 100.
-	w2 := 20.
-	b := 1.
+	b := 10.
 
-	return w1*x1 + w2*x2 + b
+	return w1*x1 + b
 }
