@@ -170,6 +170,18 @@ func (v *Vector) MultiplicateBy(n float64) *Vector {
 	return NewVector(result)
 }
 
+func (m *Matrix) ExtendWith(v *Vector) *Matrix {
+	result := make([][]float64, 0)
+
+	column := v.getData()
+
+	for i, rowItems := range m.getData() {
+		result = append(result, append(rowItems, column[i]))
+	}
+
+	return NewMatrix(result)
+}
+
 func scalarMultiplication(a, b *Vector) float64 {
 	var result float64
 

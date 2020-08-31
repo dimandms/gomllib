@@ -228,3 +228,35 @@ func TestMatrix_getData(t *testing.T) {
 		})
 	}
 }
+
+func TestMatrix_ExtendWith(t *testing.T) {
+	type args struct {
+		v *Vector
+	}
+	tests := []struct {
+		name string
+		m    *Matrix
+		args args
+		want *Matrix
+	}{
+		{"happy path",
+			NewMatrix([][]float64{
+				{1.0, 2.0},
+				{3.0, 4.0},
+			}),
+			args{NewVector([]float64{
+				4.0, 4.0,
+			})},
+			NewMatrix([][]float64{
+				{1.0, 2.0, 4.0},
+				{3.0, 4.0, 4.0},
+			})},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.m.ExtendWith(tt.args.v); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Matrix.ExtendWith() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

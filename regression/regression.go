@@ -9,7 +9,6 @@ import (
 
 type LinearRegressor struct {
 	Weights      *ndarray.Vector
-	Bias         float64
 	HasIntercept bool
 }
 
@@ -18,9 +17,14 @@ func NewLinearRegressor(addItercept bool) LinearRegressor {
 }
 
 func (lr *LinearRegressor) Train(objects *ndarray.Matrix, targets *ndarray.Vector) error {
-	_, numberOfFeatures := objects.Shape()
+	numberOfObjects, numberOfFeatures := objects.Shape()
 
-	lr.initWeigths(numberOfFeatures)
+	if lr.HasIntercept {
+		lr.initWeigths(numberOfFeatures + 1)
+		objects = objects.ExtendWith(ndarray.NewVectorFrom(1.0, numberOfObjects))
+	} else {
+		lr.initWeigths(numberOfFeatures)
+	}
 
 	learningRate := 0.01
 	numberOfIteration := 0
@@ -29,7 +33,7 @@ func (lr *LinearRegressor) Train(objects *ndarray.Matrix, targets *ndarray.Vecto
 	for numberOfIteration < maxNumberOfIteration {
 		numberOfIteration += 1
 
-		grad, biasDerivative := mseGradient(objects, targets, lr.Weights, lr.Bias)
+		grad := mseGradient(objects, targets, lr.Weights)
 
 		updatedWeights, err := lr.Weights.SubVector(grad.MultiplicateBy(learningRate))
 		if err != nil {
@@ -37,10 +41,8 @@ func (lr *LinearRegressor) Train(objects *ndarray.Matrix, targets *ndarray.Vecto
 		}
 		lr.Weights = updatedWeights
 
-		lr.Bias -= biasDerivative * learningRate
-
-		loss := mse(objects, targets, lr.Weights, lr.Bias)
-		fmt.Printf("iteration [%d] grad: %v, loss: %v w: %v, b: %v \n", numberOfIteration, grad, loss, lr.Weights, lr.Bias)
+		loss := mse(objects, targets, lr.Weights)
+		fmt.Printf("iteration [%d] grad: %v, loss: %v w: %v\n", numberOfIteration, grad, loss, lr.Weights)
 
 	}
 
@@ -48,10 +50,6 @@ func (lr *LinearRegressor) Train(objects *ndarray.Matrix, targets *ndarray.Vecto
 }
 
 func (lr *LinearRegressor) initWeigths(numberOfFeatures int) {
-	if lr.HasIntercept {
-		lr.Bias = rand.Float64()
-	}
-
 	weights := make([]float64, numberOfFeatures)
 	for i := range weights {
 		weights[i] = rand.Float64()
@@ -60,52 +58,39 @@ func (lr *LinearRegressor) initWeigths(numberOfFeatures int) {
 	lr.Weights = ndarray.NewVector(weights)
 }
 
-func mse(objects *ndarray.Matrix, trueValues, weights *ndarray.Vector, bias float64) float64 {
+func mse(objects *ndarray.Matrix, trueValues, weights *ndarray.Vector) float64 {
 	numberOfObjects, _ := objects.Shape()
-	biasVector := ndarray.NewVectorFrom(bias, numberOfObjects)
 
 	answer, err := objects.DotVector(weights)
 	if err != nil {
 		return 0.0
 	}
 
-	biasedAnswer, err := answer.AddVector(biasVector)
+	errorVectorized, err := trueValues.SubVector(answer)
 	if err != nil {
 		return 0.0
 	}
 
-	errorVectorized, err := trueValues.SubVector(biasedAnswer)
-	if err != nil {
-		return 0.0
-	}
 	return errorVectorized.Pow(2).Sum() / float64(numberOfObjects)
 }
 
-func mseGradient(objects *ndarray.Matrix, trueValues, weights *ndarray.Vector, bias float64) (*ndarray.Vector, float64) {
+func mseGradient(objects *ndarray.Matrix, trueValues, weights *ndarray.Vector) *ndarray.Vector {
 	numberOfObjects, _ := objects.Shape()
-	biasVector := ndarray.NewVectorFrom(bias, numberOfObjects)
 
 	answer, err := objects.DotVector(weights)
 	if err != nil {
-		return nil, 0.0
+		return nil
 	}
 
-	biasedAnswer, err := answer.AddVector(biasVector)
+	errorVectorized, err := answer.SubVector(trueValues)
 	if err != nil {
-		return nil, 0.0
-	}
-
-	errorVectorized, err := biasedAnswer.SubVector(trueValues)
-	if err != nil {
-		return nil, 0.0
+		return nil
 	}
 
 	tempResult, err := objects.Transpose().DotVector(errorVectorized)
 	if err != nil {
-		return nil, 0.0
+		return nil
 	}
 
-	partialBiasDerivative := errorVectorized.Sum()
-
-	return tempResult.MultiplicateBy(1 / float64(numberOfObjects)), partialBiasDerivative
+	return tempResult.MultiplicateBy(1 / float64(numberOfObjects))
 }
