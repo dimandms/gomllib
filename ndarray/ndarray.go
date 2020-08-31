@@ -66,6 +66,14 @@ func (v *Vector) getData() []float64 {
 	return []float64{}
 }
 
+func (m *Matrix) GetRow(index int) []float64 {
+	return m.getData()[index]
+}
+
+func (v *Vector) GetItem(index int) float64 {
+	return v.getData()[index]
+}
+
 func (m *Matrix) DotVector(v *Vector) (*Vector, error) {
 	rows, columns := m.Shape()
 	vectorSize := v.Shape()
@@ -201,6 +209,26 @@ func (m *Matrix) ExtendWith(v *Vector) *Matrix {
 	}
 
 	return NewMatrix(result)
+}
+
+func (v *Vector) ScaleStandard() *Vector {
+	result := make([]float64, 0)
+
+	vectorMean := mean(v.getData())
+	vectorStandartdDeviation := std(v.getData(), vectorMean)
+
+	for _, item := range v.getData() {
+		if !equal(vectorStandartdDeviation, 0.0) {
+			transformedValue := (item - vectorMean) / vectorStandartdDeviation
+			result = append(result, transformedValue)
+		} else {
+			transformedValue := (item - vectorMean) / 1.0
+			result = append(result, transformedValue)
+		}
+
+	}
+
+	return NewVector(result)
 }
 
 func scalarMultiplication(a, b *Vector) float64 {

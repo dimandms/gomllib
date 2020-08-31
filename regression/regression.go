@@ -7,9 +7,9 @@ import (
 	"github.com/dimandms/gomllib/ndarray"
 )
 
-const maxNumberOfIteration = 500
+const maxNumberOfIteration = 1500
 const learningRate = 0.01
-const epsilon = 0.001
+const epsilon = 0.00001
 
 type LinearRegressor struct {
 	Weights      *ndarray.Vector
