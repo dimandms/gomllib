@@ -96,19 +96,22 @@ func (v *Vector) GetItem(index int) (float64, error) {
 	return data[index], nil
 }
 
+//TODO: switch to argument as a interface Tensor? with Shape(), GetRow()
+// Matrix and Vector types has 2 method to work inside Dot()
 func (m *Matrix) DotVector(v *Vector) (*Vector, error) {
-	rows, columns := m.Shape()
-	vectorSize := v.Shape()
+	result := make([]float64, 0)
 
-	//TODO: move checjing to scalarMultiplication func
-	if columns != vectorSize {
-		return nil, fmt.Errorf("Maxtix dot product with vector failed: incompatable shapes: %v, %v", columns, vectorSize)
+	rows, err := m.getData()
+	if err != nil {
+		return nil, fmt.Errorf("DotVector call failed: %v", err)
 	}
 
-	result := make([]float64, rows)
-	for i, rowItems := range m.getData() {
-		rowVector := NewVector(rowItems)
-		result[i] = scalarMultiplication(rowVector, v)
+	for _, row := range rows {
+		mult, err := scalarMultiplication(NewVector(row), v)
+		if err != nil {
+			return nil, fmt.Errorf("DotVector failed: %v", err) 
+		}
+		result = append(result, mult)
 	}
 
 	return NewVector(result), nil
@@ -253,15 +256,25 @@ func (v *Vector) ScaleStandard() *Vector {
 	return NewVector(result)
 }
 
-func scalarMultiplication(a, b *Vector) float64 {
+
+//TODO: works with data length not Shape(), because current 
+//Vector implementation do not have rows, columns and Transpose()
+func scalarMultiplication(a, b *Vector) (float64, error) {
 	var result float64
 
 	aData := a.getData()
 	bData := b.getData()
 
+	aLength := len(a.data)
+	bLength := len(b.data)
+
+	if aLength = bLength {
+		return 0.0, fmt.Errorf("Scalar multiplication failed: incompatable data lengths: %v, %v", aLength, bLength)
+	}
+
 	for i, item := range aData {
 		result += item * bData[i]
 	}
 
-	return result
+	return result, nil
 }
