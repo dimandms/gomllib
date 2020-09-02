@@ -25,14 +25,17 @@ func NewVector(data []float64) *Vector {
 	}
 }
 
-func NewVectorFrom(value float64, size int) *Vector {
-	data := make([]float64, size)
+func NewVectorFrom(value float64, size int) (*Vector, error) {
+	if size < 1 {
+		return nil, fmt.Errorf("Allocation of the new *Vector failed. Size passed: %v", size)
+	}
 
+	data := make([]float64, size)
 	for i := range data {
 		data[i] = value
 	}
 
-	return &Vector{data}
+	return &Vector{data}, nil
 }
 
 func (m *Matrix) Shape() (int, int) {
@@ -43,35 +46,54 @@ func (m *Matrix) Shape() (int, int) {
 	}
 
 	return 0, 0
-
 }
 
 func (v *Vector) Shape() int {
 	return len(v.data)
 }
 
-func (m *Matrix) getData() [][]float64 {
+func (m *Matrix) getData() ([][]float64, error) {
 	if m.data != nil {
-		return m.data
+		return m.data, nil
 	}
 
-	return [][]float64{}
+	return nil, fmt.Errorf("Get data from *Matrix failed: data field is a nil pointer")
 }
 
-func (v *Vector) getData() []float64 {
+func (v *Vector) getData() ([]float64, error) {
 	if v.data != nil {
-		return v.data
+		return v.data, nil
 	}
 
-	return []float64{}
+	return nil, fmt.Errorf("Get data from *Vector failed: data field is a nil pointer")
 }
 
-func (m *Matrix) GetRow(index int) []float64 {
-	return m.getData()[index]
+func (m *Matrix) GetRow(index int) ([]float64, error) {
+	data, err := m.getData()
+	if err != nil {
+		return nil, fmt.Errorf("Get Row from *Matrix failed: %v", err)
+	}
+
+	dataLength := len(data)
+	if index >= dataLength {
+		return nil, fmt.Errorf("Get Row index=[%v] from *Matrix failed, number of rows: %v", index, dataLength)
+	}
+
+	return data[index], nil
 }
 
-func (v *Vector) GetItem(index int) float64 {
-	return v.getData()[index]
+func (v *Vector) GetItem(index int) (float64, error) {
+	data, err := v.getData()
+	if err != nil {
+		return 0.0, fmt.Errorf("Get item from *Vector failed: %v", err)
+	}
+
+	dataLength := len(data)
+	if index >= dataLength {
+		return 0.0, fmt.Errorf("Get item index=[%v] from *Vector failed, lenth of data is: %v", index, dataLength)
+	}
+
+	return data[index], nil
 }
 
 func (m *Matrix) DotVector(v *Vector) (*Vector, error) {
