@@ -1,6 +1,9 @@
 package ndarray
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 func TestMatrix_Shape(t *testing.T) {
 	tests := []struct {
@@ -61,6 +64,54 @@ func TestMatrix_Shape(t *testing.T) {
 			}
 			if got1 != tt.want2 {
 				t.Errorf("Matrix.Shape() got1 = %v, want %v", got1, tt.want2)
+			}
+		})
+	}
+}
+
+func TestMatrix_GetRow(t *testing.T) {
+	type args struct {
+		index int
+	}
+	tests := []struct {
+		name    string
+		m       *Matrix
+		args    args
+		want    []float64
+		wantErr bool
+	}{
+		{
+			"happy path",
+			NewMatrix([][]float64{
+				{1.0, 2.0},
+				{3.0, 4.0},
+				{3.0, 4.0},
+			}),
+			args{0},
+			[]float64{1.0, 2.0},
+			false,
+		},
+		{
+			"wrong index",
+			NewMatrix([][]float64{
+				{1.0, 2.0},
+				{3.0, 4.0},
+				{3.0, 4.0},
+			}),
+			args{3},
+			nil,
+			true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.m.GetRow(tt.args.index)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Matrix.GetRow() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Matrix.GetRow() = %v, want %v", got, tt.want)
 			}
 		})
 	}
