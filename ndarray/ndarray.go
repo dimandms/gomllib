@@ -25,64 +25,44 @@ func NewVector(data []float64) *Vector {
 	}
 }
 
-func NewVectorFrom(value float64, size int) (*Vector, error) {
-	if size < 1 {
-		return nil, fmt.Errorf("Allocation of the new *Vector failed. Size passed: %v", size)
-	}
-
+func NewVectorFrom(value float64, size uint) *Vector {
 	data := make([]float64, size)
 	for i := range data {
 		data[i] = value
 	}
 
-	return &Vector{data}, nil
+	return &Vector{data}
 }
 
-func (m *Matrix) Shape() (int, int, error) {
-	data, err := m.getData()
-	if err != nil {
-		return 0, 0, err
-	}
-
+func (m *Matrix) Shape() (int, int) {
+	data := m.getData()
 	rowsNumber := len(data)
 	if rowsNumber > 0 {
 		columnsNumber := len(data[0])
-		return rowsNumber, columnsNumber, nil
+		return rowsNumber, columnsNumber
 	}
 
-	return 0, 0, nil
+	return 0, 0
 }
 
-func (v *Vector) Shape() (int, error) {
-	data, err := v.getData()
-	if err != nil {
-		return 0, err
-	}
+func (v *Vector) Shape() int {
+	data := v.getData()
 
-	return len(data), nil
+	return len(data)
 }
 
-func (m *Matrix) getData() ([][]float64, error) {
-	if m.data != nil {
-		return m.data, nil
-	}
-
-	return nil, fmt.Errorf("Get data from *Matrix failed: data field is a nil pointer")
+func (m *Matrix) getData() [][]float64 {
+	//TODO: getter for future concurrency access to data
+	return m.data
 }
 
-func (v *Vector) getData() ([]float64, error) {
-	if v.data != nil {
-		return v.data, nil
-	}
-
-	return nil, fmt.Errorf("Get data from *Vector failed: data field is a nil pointer")
+func (v *Vector) getData() []float64 {
+	//TODO: getter for future concurrency access to data
+	return v.data
 }
 
 func (m *Matrix) GetRow(index int) ([]float64, error) {
-	data, err := m.getData()
-	if err != nil {
-		return nil, fmt.Errorf("Get Row from *Matrix failed: %v", err)
-	}
+	data := m.getData()
 
 	dataLength := len(data)
 	if index >= dataLength {
@@ -93,10 +73,7 @@ func (m *Matrix) GetRow(index int) ([]float64, error) {
 }
 
 func (v *Vector) GetItem(index int) (float64, error) {
-	data, err := v.getData()
-	if err != nil {
-		return 0.0, fmt.Errorf("Get item from *Vector failed: %v", err)
-	}
+	data := v.getData()
 
 	dataLength := len(data)
 	if index >= dataLength {
@@ -106,17 +83,12 @@ func (v *Vector) GetItem(index int) (float64, error) {
 	return data[index], nil
 }
 
-//TODO: switch to argument as a interface Tensor? with Shape(), GetRow()
+// TODO: switch to argument as an interface Tensor? with Shape(), GetRow()
 // Matrix and Vector types has 2 method to work inside Dot()
 func (m *Matrix) DotVector(v *Vector) (*Vector, error) {
 	result := make([]float64, 0)
 
-	rows, err := m.getData()
-	if err != nil {
-		return nil, fmt.Errorf("DotVector call failed: %v", err)
-	}
-
-	for _, row := range rows {
+	for _, row := range m.getData() {
 		mult, err := scalarMultiplication(NewVector(row), v)
 		if err != nil {
 			return nil, fmt.Errorf("DotVector failed: %v", err)
@@ -127,29 +99,22 @@ func (m *Matrix) DotVector(v *Vector) (*Vector, error) {
 	return NewVector(result), nil
 }
 
-func (m *Matrix) Transpose() (*Matrix, error) {
-	mData, err := m.getData()
-	if err != nil {
-		return nil, fmt.Errorf("DotVector failed: %v", err)
-	}
-
-	k, z, err := m.Shape()
-	if err != nil {
-		return nil, fmt.Errorf("DotVector failed: %v", err)
-	}
+func (m *Matrix) Transpose() *Matrix {
+	k, z := m.Shape()
 
 	result := make([][]float64, z)
 	for i := range result {
 		result[i] = make([]float64, k)
 	}
 
+	mData := m.getData()
 	for i, row := range mData {
 		for j := range row {
 			result[j][i] = mData[i][j]
 		}
 	}
 
-	return NewMatrix(result), nil
+	return NewMatrix(result)
 }
 
 func (v *Vector) DotVector(u *Vector) (float64, error) {
@@ -162,15 +127,8 @@ func (v *Vector) DotVector(u *Vector) (float64, error) {
 }
 
 func (v *Vector) SubVector(u *Vector) (*Vector, error) {
-	vData, err := v.getData()
-	if err != nil {
-		return nil, fmt.Errorf("SubVector failed cause v Vector: %v", err)
-	}
-
-	uData, err := u.getData()
-	if err != nil {
-		return nil, fmt.Errorf("SubVector failed cause u Vector: %v", err)
-	}
+	vData := v.getData()
+	uData := u.getData()
 
 	vLength := len(vData)
 	uLength := len(uData)
@@ -188,15 +146,8 @@ func (v *Vector) SubVector(u *Vector) (*Vector, error) {
 }
 
 func (v *Vector) AddVector(u *Vector) (*Vector, error) {
-	vData, err := v.getData()
-	if err != nil {
-		return nil, fmt.Errorf("vector add failed cause v Vector: %v", err)
-	}
-
-	uData, err := u.getData()
-	if err != nil {
-		return nil, fmt.Errorf("vector add failed cause u Vector: %v", err)
-	}
+	vData := v.getData()
+	uData := u.getData()
 
 	vLength := len(vData)
 	uLength := len(uData)
@@ -213,69 +164,50 @@ func (v *Vector) AddVector(u *Vector) (*Vector, error) {
 	return NewVector(result), nil
 }
 
-func (v *Vector) Sum() (float64, error) {
+func (v *Vector) Sum() float64 {
 	var result float64
 
-	data, err := v.getData()
-	if err != nil {
-		return 0.0, fmt.Errorf("vector sum failed: %v", err)
-	}
-
-	for _, value := range data {
+	for _, value := range v.getData() {
 		result += value
 	}
 
-	return result, nil
+	return result
 }
 
-func (v *Vector) Pow(n float64) (*Vector, error) {
-	data, err := v.getData()
-	if err != nil {
-		return nil, fmt.Errorf("vector sum failed: %v", err)
-	}
-
+func (v *Vector) Pow(n float64) *Vector {
+	data := v.getData()
 	result := make([]float64, len(data))
+
 	for i, value := range data {
 		result[i] = math.Pow(value, n)
 	}
 
-	return NewVector(result), nil
+	return NewVector(result)
 }
 
-func (v *Vector) MultiplicateBy(n float64) (*Vector, error) {
-	data, err := v.getData()
-	if err != nil {
-		return nil, fmt.Errorf("vector mult by failed: %v", err)
-	}
-
+func (v *Vector) MultiplicateBy(n float64) *Vector {
+	data := v.getData()
 	result := make([]float64, len(data))
 
 	for i, value := range data {
 		result[i] = value * n
 	}
 
-	return NewVector(result), nil
+	return NewVector(result)
 }
 
-func (v *Vector) Copy() (*Vector, error) {
-	data, err := v.getData()
-	if err != nil {
-		return nil, fmt.Errorf("vector copy by failed: %v", err)
-	}
-
+func (v *Vector) Copy() *Vector {
+	data := v.getData()
 	result := make([]float64, len(data))
+
 	copy(result, data)
 
-	return NewVector(result), nil
+	return NewVector(result)
 }
 
-func (v *Vector) AbsMax() (float64, error) {
+func (v *Vector) AbsMax() float64 {
 	var result float64
-
-	data, err := v.getData()
-	if err != nil {
-		return 0.0, fmt.Errorf("vector abs max failed: %v", err)
-	}
+	data := v.getData()
 
 	for _, value := range data {
 		absValue := math.Abs(value)
@@ -284,47 +216,28 @@ func (v *Vector) AbsMax() (float64, error) {
 		}
 	}
 
-	return result, nil
+	return result
 }
 
 func (m *Matrix) ExtendWith(v *Vector) (*Matrix, error) {
-	rowsNumber, _, err := m.Shape()
-	if err != nil {
-		return nil, fmt.Errorf("Extend matrix with new column failed: %v", err)
-	}
-
-	itemsNumber, err := v.Shape()
-	if err != nil {
-		return nil, fmt.Errorf("Extend matrix with new column failed: %v", err)
-	}
+	rowsNumber, _ := m.Shape()
+	itemsNumber := v.Shape()
 
 	if rowsNumber != itemsNumber {
 		return nil, fmt.Errorf("Extend matrix with new column failed: rows number != itemsNUmber: %v != %v", rowsNumber, itemsNumber)
 	}
 
-	newColumn, err := v.getData()
-	if err != nil {
-		return nil, fmt.Errorf("Extend matrix with new column failed: %v", err)
-	}
-
-	rows, err := m.getData()
-	if err != nil {
-		return nil, fmt.Errorf("Extend matrix with new column failed: %v", err)
-	}
-
 	result := make([][]float64, rowsNumber)
-	for i, row := range rows {
+	newColumn := v.getData()
+	for i, row := range m.getData() {
 		result[i] = append(row, newColumn[i])
 	}
 
 	return NewMatrix(result), nil
 }
 
-func (v *Vector) ScaleStandard() (*Vector, float64, float64, error) {
-	data, err := v.getData()
-	if err != nil {
-		return nil, 0.0, 0.0, fmt.Errorf("Extend matrix with new column failed: %v", err)
-	}
+func (v *Vector) ScaleStandard() (*Vector, float64, float64) {
+	data := v.getData()
 
 	vectorMean := mean(data)
 	vectorStandartdDeviation := std(data, vectorMean)
@@ -340,23 +253,15 @@ func (v *Vector) ScaleStandard() (*Vector, float64, float64, error) {
 		}
 	}
 
-	return NewVector(result), vectorMean, vectorStandartdDeviation, nil
+	return NewVector(result), vectorMean, vectorStandartdDeviation
 }
 
 //TODO: works with data length not Shape(), because current
 //Vector implementation do not have rows, columns and Transpose()
 func scalarMultiplication(a, b *Vector) (float64, error) {
 	var result float64
-
-	aData, err := a.getData()
-	if err != nil {
-		return 0.0, fmt.Errorf("Scalar multiplication failed: getData from a vector failed")
-	}
-
-	bData, err := b.getData()
-	if err != nil {
-		return 0.0, fmt.Errorf("Scalar multiplication failed: getData from b vector failed")
-	}
+	aData := a.getData()
+	bData := b.getData()
 
 	aLength := len(a.data)
 	bLength := len(b.data)

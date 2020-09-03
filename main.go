@@ -36,7 +36,8 @@ func main() {
 
 	preds := reg.Predict(ndarray.NewMatrix([][]float64{data.GetRow(15)}))
 
-	fmt.Printf("true: %v preds: %v", targers.GetItem(15), preds)
+	fmt.Printf("true: %v preds: %v \n", targers.GetItem(15), preds)
+	fmt.Printf("weigths: %v ", reg.Weights)
 }
 
 func exampleFunc(x1, x2 float64) float64 {
