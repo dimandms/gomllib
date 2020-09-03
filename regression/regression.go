@@ -69,11 +69,12 @@ func (lr *LinearRegressor) preprocess(objects *ndarray.Matrix) *ndarray.Matrix {
 	n, _ := objects.Shape()
 
 	if lr.HasIntercept {
-		fakeBiasFeature, err := ndarray.NewVectorFrom(1.0, n)
+		fakeBiasFeature := ndarray.NewVectorFrom(1.0, uint(n))
+		extended, err := objects.ExtendWith(fakeBiasFeature)
 		if err != nil {
 			return nil
 		}
-		return objects.ExtendWith(fakeBiasFeature)
+		return extended
 	}
 	return objects
 }
