@@ -116,3 +116,79 @@ func TestMatrix_GetRow(t *testing.T) {
 		})
 	}
 }
+
+func TestMatrix_DotVector(t *testing.T) {
+	type args struct {
+		v *Vector
+	}
+	tests := []struct {
+		name    string
+		m       *Matrix
+		args    args
+		want    *Vector
+		wantErr bool
+	}{
+		{
+			"happy path",
+			NewMatrix([][]float64{
+				{1.0, 2.0},
+				{3.0, 4.0},
+				{3.0, 4.0},
+			}),
+			args{NewVector([]float64{1.0, 1.0})},
+			NewVector([]float64{3.0, 7.0, 7.0}),
+			false,
+		},
+		{
+			"incompatable shape",
+			NewMatrix([][]float64{
+				{1.0, 2.0},
+				{3.0, 4.0},
+				{3.0, 4.0},
+			}),
+			args{NewVector([]float64{1.0, 1.0, 1.0})},
+			nil,
+			true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.m.DotVector(tt.args.v)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Matrix.DotVector() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Matrix.DotVector() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestMatrix_Transpose(t *testing.T) {
+	tests := []struct {
+		name string
+		m    *Matrix
+		want *Matrix
+	}{
+		{
+			"happy path",
+			NewMatrix([][]float64{
+				{1.0, 2.0},
+				{3.0, 4.0},
+				{3.0, 4.0},
+			}),
+			NewMatrix([][]float64{
+				{1.0, 3.0, 3.0},
+				{2.0, 4.0, 4.0},
+			}),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.m.Transpose(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Matrix.Transpose() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
