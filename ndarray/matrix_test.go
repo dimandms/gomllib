@@ -192,3 +192,52 @@ func TestMatrix_Transpose(t *testing.T) {
 		})
 	}
 }
+
+func TestMatrix_ExtendWith(t *testing.T) {
+	type args struct {
+		v *Vector
+	}
+	tests := []struct {
+		name    string
+		m       *Matrix
+		args    args
+		want    *Matrix
+		wantErr bool
+	}{
+		{
+			"happy path",
+			NewMatrix([][]float64{
+				{1.0, 3.0},
+				{2.0, 4.0},
+			}),
+			args{NewVector([]float64{1.0, 2.0})},
+			NewMatrix([][]float64{
+				{1.0, 3.0, 1.0},
+				{2.0, 4.0, 2.0},
+			}),
+			false,
+		},
+		{
+			"wrong shapes",
+			NewMatrix([][]float64{
+				{1.0, 3.0},
+				{2.0, 4.0},
+			}),
+			args{NewVector([]float64{1.0, 2.0, 3.0})},
+			nil,
+			true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.m.ExtendWith(tt.args.v)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Matrix.ExtendWith() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Matrix.ExtendWith() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
