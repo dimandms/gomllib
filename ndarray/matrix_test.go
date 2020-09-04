@@ -32,7 +32,7 @@ func TestMatrix_Shape(t *testing.T) {
 			2,
 		},
 		{
-			"emtpy",
+			"empty",
 			NewMatrix([][]float64{}),
 			0,
 			0,
@@ -140,7 +140,7 @@ func TestMatrix_DotVector(t *testing.T) {
 			false,
 		},
 		{
-			"incompatable shape",
+			"incompatible shape",
 			NewMatrix([][]float64{
 				{1.0, 2.0},
 				{3.0, 4.0},

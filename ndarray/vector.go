@@ -63,7 +63,7 @@ func (v *Vector) SubVector(u *Vector) (*Vector, error) {
 	uLength := len(uData)
 
 	if vLength != uLength {
-		return nil, fmt.Errorf("vector sub with vector failed: incompatable shapes: %v, %v", vLength, uLength)
+		return nil, fmt.Errorf("vector sub with vector failed: incompatible shapes: %v, %v", vLength, uLength)
 	}
 
 	result := make([]float64, vLength)
@@ -82,7 +82,7 @@ func (v *Vector) AddVector(u *Vector) (*Vector, error) {
 	uLength := len(uData)
 
 	if vLength != uLength {
-		return nil, fmt.Errorf("vector add with vector failed: incompatable shapes: %v, %v", vLength, uLength)
+		return nil, fmt.Errorf("vector add with vector failed: incompatible shapes: %v, %v", vLength, uLength)
 	}
 
 	result := make([]float64, vLength)
@@ -178,7 +178,7 @@ func scalarMultiplication(a, b *Vector) (float64, error) {
 	aLength := len(a.data)
 	bLength := len(b.data)
 	if aLength != bLength {
-		return 0.0, fmt.Errorf("Scalar multiplication failed: incompatable data lengths: %v, %v", aLength, bLength)
+		return 0.0, fmt.Errorf("Scalar multiplication failed: incompatible data lengths: %v, %v", aLength, bLength)
 	}
 
 	for i, item := range aData {
