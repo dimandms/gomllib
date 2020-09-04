@@ -5,7 +5,7 @@ import (
 	"math"
 )
 
-// Vector - type represend 1D array
+// Vector - type represent 1D array
 type Vector struct {
 	data []float64
 }

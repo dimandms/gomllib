@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-// Matrix - type represend 2D array
+// Matrix - type represent 2D array
 type Matrix struct {
 	data [][]float64
 }

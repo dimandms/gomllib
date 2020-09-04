@@ -11,7 +11,7 @@ const maxNumberOfIteration = 1500
 const learningRate = 0.01
 const epsilon = 0.00001
 
-//LinearRegressor - type represend linear regression
+//LinearRegressor - type represent linear regression
 type LinearRegressor struct {
 	Weights      *ndarray.Vector
 	HasIntercept bool
