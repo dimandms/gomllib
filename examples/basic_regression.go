@@ -39,7 +39,7 @@ func main() {
 	trueValue, _ := targers.GetItem(15)
 
 	fmt.Printf("true: %v preds: %v \n", trueValue, preds)
-	fmt.Printf("weigths: %v ", reg.Weights)
+	fmt.Printf("weights: %v ", reg.Weights)
 }
 
 func exampleFunc(x1, x2 float64) float64 {
