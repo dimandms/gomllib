@@ -5,16 +5,19 @@ import (
 	"math"
 )
 
+// Vector - type represend 1D array
 type Vector struct {
 	data []float64
 }
 
+// NewVector is basic constructor for 1D array
 func NewVector(data []float64) *Vector {
 	return &Vector{
 		data: data,
 	}
 }
 
+// NewVectorFrom is constructor to create 1D array from value with size
 func NewVectorFrom(value float64, size uint) *Vector {
 	data := make([]float64, size)
 	for i := range data {

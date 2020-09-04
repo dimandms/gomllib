@@ -4,10 +4,12 @@ import (
 	"fmt"
 )
 
+// Matrix - type represend 2D array
 type Matrix struct {
 	data [][]float64
 }
 
+// NewMatrix is basic constructor for 2D array
 func NewMatrix(data [][]float64) *Matrix {
 	return &Matrix{
 		data: data,
