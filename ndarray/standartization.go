@@ -4,20 +4,24 @@ import "math"
 
 const float64EqualityThreshold = 1e-5
 
+// Transformer interface for transforming features
 type Transformer interface {
 	Fit(objects *Matrix) *Matrix
 	Transform(objects *Matrix) *Matrix
 }
 
+// StandardScaler is type for scale features to standartization
 type StandardScaler struct {
 	mean               []float64
 	standartdDeviation []float64
 }
 
+// NewStandardScaler is basic constructor fot StandardScaler
 func NewStandardScaler() *StandardScaler {
 	return &StandardScaler{}
 }
 
+// Fit is method to calculate mean and standard deviation
 func (s *StandardScaler) Fit(objects *Matrix) {
 	data := objects.Transpose().getData()
 
@@ -29,6 +33,7 @@ func (s *StandardScaler) Fit(objects *Matrix) {
 	}
 }
 
+// Transform is method to transform data with calculated mean and standard deviation
 func (s *StandardScaler) Transform(objects *Matrix) *Matrix {
 	result := make([][]float64, 0)
 
@@ -55,6 +60,7 @@ func (s *StandardScaler) Transform(objects *Matrix) *Matrix {
 	return NewMatrix(result)
 }
 
+// FitTransform combined Fit and Transform for input data
 func (s *StandardScaler) FitTransform(objects *Matrix) *Matrix {
 	s.Fit(objects)
 	return s.Transform(objects)

@@ -11,15 +11,18 @@ const maxNumberOfIteration = 1500
 const learningRate = 0.01
 const epsilon = 0.00001
 
+//LinearRegressor - type represend linear regression
 type LinearRegressor struct {
 	Weights      *ndarray.Vector
 	HasIntercept bool
 }
 
+//NewLinearRegressor is basic constructor LinearRegressor
 func NewLinearRegressor(addItercept bool) LinearRegressor {
 	return LinearRegressor{HasIntercept: addItercept}
 }
 
+//Train is method to train (fit) linear regression model
 func (lr *LinearRegressor) Train(objects *ndarray.Matrix, targets *ndarray.Vector) error {
 	objects = lr.preprocess(objects)
 	_, n := objects.Shape()
@@ -42,6 +45,7 @@ func (lr *LinearRegressor) Train(objects *ndarray.Matrix, targets *ndarray.Vecto
 	return nil
 }
 
+//Predict is method to predict answer with trained linear regression model
 func (lr *LinearRegressor) Predict(objects *ndarray.Matrix) *ndarray.Vector {
 	objects = lr.preprocess(objects)
 
