@@ -46,15 +46,15 @@ func (lr *LinearRegressor) Train(objects *ndarray.Matrix, targets *ndarray.Vecto
 }
 
 //Predict is method to predict answer with trained linear regression model
-func (lr *LinearRegressor) Predict(objects *ndarray.Matrix) *ndarray.Vector {
+func (lr *LinearRegressor) Predict(objects *ndarray.Matrix) (*ndarray.Vector, error) {
 	objects = lr.preprocess(objects)
 
 	answer, err := objects.DotVector(lr.Weights)
 	if err != nil {
-		return nil
+		return nil, fmt.Errorf("Linear regressor Predict call failed: %v", err)
 	}
 
-	return answer
+	return answer, nil
 }
 
 func (lr *LinearRegressor) checkStopIterations(newWeights, previousWeigths *ndarray.Vector) bool {

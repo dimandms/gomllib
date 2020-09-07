@@ -29,13 +29,10 @@ func main() {
 	data := scaler.FitTransform(ndarray.NewMatrix(X))
 	targers, _, _ := ndarray.NewVector(y).ScaleStandard()
 
-	err := reg.Train(data, targers)
-	if err != nil {
-		fmt.Println("oops")
-	}
+	_ = reg.Train(data, targers)
 
 	row, _ := data.GetRow(15)
-	preds := reg.Predict(ndarray.NewMatrix([][]float64{row}))
+	preds, _ := reg.Predict(ndarray.NewMatrix([][]float64{row}))
 	trueValue, _ := targers.GetItem(15)
 
 	fmt.Printf("true: %v preds: %v \n", trueValue, preds)
