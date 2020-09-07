@@ -23,7 +23,7 @@ func NewStandardScaler() *StandardScaler {
 
 // Fit is method to calculate mean and standard deviation
 func (s *StandardScaler) Fit(objects *Matrix) {
-	data := objects.Transpose().getData()
+	data := objects.Transpose().GetData()
 
 	for _, feature := range data {
 		featureMean := mean(feature)
@@ -37,7 +37,7 @@ func (s *StandardScaler) Fit(objects *Matrix) {
 func (s *StandardScaler) Transform(objects *Matrix) *Matrix {
 	result := make([][]float64, 0)
 
-	for _, object := range objects.getData() {
+	for _, object := range objects.GetData() {
 		transformedObject := make([]float64, 0)
 
 		for i, featureValue := range object {

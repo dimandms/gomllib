@@ -15,6 +15,7 @@ const epsilon = 0.00001
 type LinearRegressor struct {
 	Weights      *ndarray.Vector
 	HasIntercept bool
+	history      History
 }
 
 //NewLinearRegressor is basic constructor LinearRegressor
@@ -30,12 +31,15 @@ func (lr *LinearRegressor) Train(objects *ndarray.Matrix, targets *ndarray.Vecto
 
 	for i := 0; i < maxNumberOfIteration; i++ {
 		previousWeigths := lr.Weights.Copy()
-		err := lr.step(objects, targets, learningRate)
+		grad, weigths, err := lr.step(objects, targets, learningRate)
 		if err != nil {
-			return err
+			return fmt.Errorf("iteration failed: %v", err)
 		}
 
-		fmt.Printf("iteration [%d] loss: %v w: %v\n", i, mse(objects, targets, lr.Weights), lr.Weights)
+		lr.Weights = weigths
+
+		loss := mse(objects, targets, lr.Weights)
+		lr.history.Push(i, loss, lr.Weights.GetData(), grad.GetData())
 
 		if lr.checkStopIterations(lr.Weights, previousWeigths) {
 			break
@@ -57,6 +61,10 @@ func (lr *LinearRegressor) Predict(objects *ndarray.Matrix) (*ndarray.Vector, er
 	return answer, nil
 }
 
+func (lr *LinearRegressor) String() string {
+	return lr.history.String()
+}
+
 func (lr *LinearRegressor) checkStopIterations(newWeights, previousWeigths *ndarray.Vector) bool {
 	delta, err := previousWeigths.SubVector(newWeights)
 	if err != nil {
@@ -64,7 +72,6 @@ func (lr *LinearRegressor) checkStopIterations(newWeights, previousWeigths *ndar
 	}
 
 	maxDelta := delta.AbsMax()
-	fmt.Printf("max delta of w: %v \n", maxDelta)
 
 	return maxDelta < epsilon
 }
@@ -83,16 +90,15 @@ func (lr *LinearRegressor) preprocess(objects *ndarray.Matrix) *ndarray.Matrix {
 	return objects
 }
 
-func (lr *LinearRegressor) step(objects *ndarray.Matrix, targets *ndarray.Vector, learningRate float64) error {
+func (lr *LinearRegressor) step(objects *ndarray.Matrix, targets *ndarray.Vector, learningRate float64) (*ndarray.Vector, *ndarray.Vector, error) {
 	grad := mseGradient(objects, targets, lr.Weights)
 
 	newWeights, err := lr.Weights.SubVector(grad.MultiplicateBy(learningRate))
 	if err != nil {
-		return err
+		return nil, nil, fmt.Errorf("gradient step failed: %v", err)
 	}
-	lr.Weights = newWeights
 
-	return nil
+	return grad, newWeights, nil
 }
 
 func (lr *LinearRegressor) initWeigths(numberOfFeatures int) {

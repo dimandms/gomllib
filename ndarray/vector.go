@@ -28,18 +28,18 @@ func NewVectorFrom(value float64, size uint) *Vector {
 }
 
 func (v *Vector) Shape() int {
-	data := v.getData()
+	data := v.GetData()
 
 	return len(data)
 }
 
-func (v *Vector) getData() []float64 {
+func (v *Vector) GetData() []float64 {
 	//TODO: getter for future concurrency access to data
 	return v.data
 }
 
 func (v *Vector) GetItem(index int) (float64, error) {
-	data := v.getData()
+	data := v.GetData()
 
 	dataLength := len(data)
 	if index >= dataLength {
@@ -59,8 +59,8 @@ func (v *Vector) DotVector(u *Vector) (float64, error) {
 }
 
 func (v *Vector) SubVector(u *Vector) (*Vector, error) {
-	vData := v.getData()
-	uData := u.getData()
+	vData := v.GetData()
+	uData := u.GetData()
 
 	vLength := len(vData)
 	uLength := len(uData)
@@ -78,8 +78,8 @@ func (v *Vector) SubVector(u *Vector) (*Vector, error) {
 }
 
 func (v *Vector) AddVector(u *Vector) (*Vector, error) {
-	vData := v.getData()
-	uData := u.getData()
+	vData := v.GetData()
+	uData := u.GetData()
 
 	vLength := len(vData)
 	uLength := len(uData)
@@ -99,7 +99,7 @@ func (v *Vector) AddVector(u *Vector) (*Vector, error) {
 func (v *Vector) Sum() float64 {
 	var result float64
 
-	for _, value := range v.getData() {
+	for _, value := range v.GetData() {
 		result += value
 	}
 
@@ -107,7 +107,7 @@ func (v *Vector) Sum() float64 {
 }
 
 func (v *Vector) Pow(n float64) *Vector {
-	data := v.getData()
+	data := v.GetData()
 	result := make([]float64, len(data))
 
 	for i, value := range data {
@@ -118,7 +118,7 @@ func (v *Vector) Pow(n float64) *Vector {
 }
 
 func (v *Vector) MultiplicateBy(n float64) *Vector {
-	data := v.getData()
+	data := v.GetData()
 	result := make([]float64, len(data))
 
 	for i, value := range data {
@@ -129,7 +129,7 @@ func (v *Vector) MultiplicateBy(n float64) *Vector {
 }
 
 func (v *Vector) Copy() *Vector {
-	data := v.getData()
+	data := v.GetData()
 	result := make([]float64, len(data))
 
 	copy(result, data)
@@ -139,7 +139,7 @@ func (v *Vector) Copy() *Vector {
 
 func (v *Vector) AbsMax() float64 {
 	var result float64
-	data := v.getData()
+	data := v.GetData()
 
 	for _, value := range data {
 		absValue := math.Abs(value)
@@ -152,7 +152,7 @@ func (v *Vector) AbsMax() float64 {
 }
 
 func (v *Vector) ScaleStandard() (*Vector, float64, float64) {
-	data := v.getData()
+	data := v.GetData()
 
 	vectorMean := mean(data)
 	vectorStandartdDeviation := std(data, vectorMean)
@@ -175,8 +175,8 @@ func (v *Vector) ScaleStandard() (*Vector, float64, float64) {
 //Vector implementation do not have rows, columns and Transpose()
 func scalarMultiplication(a, b *Vector) (float64, error) {
 	var result float64
-	aData := a.getData()
-	bData := b.getData()
+	aData := a.GetData()
+	bData := b.GetData()
 
 	aLength := len(a.data)
 	bLength := len(b.data)

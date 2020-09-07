@@ -17,7 +17,7 @@ func NewMatrix(data [][]float64) *Matrix {
 }
 
 func (m *Matrix) Shape() (int, int) {
-	data := m.getData()
+	data := m.GetData()
 	rowsNumber := len(data)
 	if rowsNumber > 0 {
 		columnsNumber := len(data[0])
@@ -27,13 +27,13 @@ func (m *Matrix) Shape() (int, int) {
 	return 0, 0
 }
 
-func (m *Matrix) getData() [][]float64 {
+func (m *Matrix) GetData() [][]float64 {
 	//TODO: getter for future concurrency access to data
 	return m.data
 }
 
 func (m *Matrix) GetRow(index int) ([]float64, error) {
-	data := m.getData()
+	data := m.GetData()
 
 	dataLength := len(data)
 	if index >= dataLength {
@@ -48,7 +48,7 @@ func (m *Matrix) GetRow(index int) ([]float64, error) {
 func (m *Matrix) DotVector(v *Vector) (*Vector, error) {
 	result := make([]float64, 0)
 
-	for _, row := range m.getData() {
+	for _, row := range m.GetData() {
 		mult, err := scalarMultiplication(NewVector(row), v)
 		if err != nil {
 			return nil, fmt.Errorf("DotVector failed: %v", err)
@@ -67,7 +67,7 @@ func (m *Matrix) Transpose() *Matrix {
 		result[i] = make([]float64, k)
 	}
 
-	mData := m.getData()
+	mData := m.GetData()
 	for i, row := range mData {
 		for j := range row {
 			result[j][i] = mData[i][j]
@@ -86,8 +86,8 @@ func (m *Matrix) ExtendWith(v *Vector) (*Matrix, error) {
 	}
 
 	result := make([][]float64, rowsNumber)
-	newColumn := v.getData()
-	for i, row := range m.getData() {
+	newColumn := v.GetData()
+	for i, row := range m.GetData() {
 		result[i] = append(row, newColumn[i])
 	}
 
